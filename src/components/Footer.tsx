@@ -131,7 +131,7 @@ const Footer: React.FC = () => {
             <h3 className="text-xl font-display font-bold mb-6 text-white">Contact Info</h3>
             <div className="space-y-4">
               <motion.a
-                href="tel:+919860146819"
+                href="tel:+918265036513"
                 whileHover={{ x: 5 }}
                 className="flex items-center space-x-3 text-gray-300 hover:text-primary-400 transition-all duration-300 group"
               >

@@ -122,7 +122,7 @@ const OutstationBooking: React.FC = () => {
       `Outstation Booking Request:\n\nCustomer: ${booking.customerName}\nPhone: ${booking.customerPhone}\nEmail: ${booking.customerEmail || 'Not provided'}\n\nFrom: ${booking.from}\nTo: ${booking.to}\nCar Type: ${booking.carType}\nDate: ${booking.date}\nTime: ${booking.time}\nEstimated Price: ₹${price}\n\nPlease confirm my booking.`
     );
     
-    window.open(`https://wa.me/919860146819?text=${message}`, '_blank');
+    window.open(`https://wa.me/918265036513?text=${message}`, '_blank');
     toast.success('Redirecting to WhatsApp for booking confirmation');
   };
 
