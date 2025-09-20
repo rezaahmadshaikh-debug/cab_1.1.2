@@ -203,7 +203,7 @@ const MumbaiLocalBooking: React.FC = () => {
       }\nEstimated Price: ₹${fareDetails?.total || 0}\n\nPlease confirm my booking.`
     );
 
-    window.open(`https://wa.me/919860146819?text=${message}`, '_blank');
+    window.open(`https://wa.me/918265036513?text=${message}`, '_blank');
     toast.success('Redirecting to WhatsApp for booking confirmation');
   };
 

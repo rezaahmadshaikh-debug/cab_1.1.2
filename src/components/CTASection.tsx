@@ -4,12 +4,12 @@ import { motion } from 'framer-motion';
 
 const CTASection: React.FC = () => {
   const handleCallNow = () => {
-    window.open('tel:+919860146819');
+    window.open('tel:+918265036513');
   };
 
   const handleWhatsApp = () => {
     const message = encodeURIComponent('Hi! I would like to book a cab service. Please provide me with more details.');
-    window.open(`https://wa.me/919860146819?text=${message}`, '_blank');
+    window.open(`https://wa.me/918265036513?text=${message}`, '_blank');
   };
 
   const trustBadges = [
@@ -165,7 +165,7 @@ const CTASection: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-6 text-white">
               <a 
-                href="tel:+919860146819" 
+                href="tel:+918265036513" 
                 className="flex items-center space-x-2 hover:text-yellow-400 transition-colors font-semibold text-lg"
               >
                 <Phone className="w-5 h-5" />
