@@ -65,8 +65,7 @@ const Hero: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.4 }} 
             className="text-xl sm:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed" 
           > 
-            Safe, Fast & Reliable cab services across Maharashtra.
-            Professional drivers, premium vehicles, transparent pricing. 
+            Safe & Reliable Cabs in Mumbai & Major Cities.
           </motion.p> 
 
           {/* Features */} 
@@ -79,7 +78,7 @@ const Hero: React.FC = () => {
             {[ 
               { icon: Clock, text: '24/7 Available' }, 
               { icon: Shield, text: 'Safe & Secure' }, 
-              { icon: MapPin, text: '4 Cities Covered' } 
+              { icon: MapPin, text: 'Multiple Cities Covered' } 
             ].map((feature, index) => ( 
               <div 
                 key={index} 

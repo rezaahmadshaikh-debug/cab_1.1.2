@@ -115,11 +115,7 @@ const Contact: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="mt-8"
             >
-              <img
-                src="https://images.pexels.com/photos/1413650/pexels-photo-1413650.jpeg?auto=compress&cs=tinysrgb&w=600"
-                alt="Our Service Area"
-                className="w-full h-64 object-cover rounded-lg shadow-lg"
-              />
+              
             </motion.div>
           </motion.div>
 

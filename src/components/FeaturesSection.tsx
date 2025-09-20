@@ -1,18 +1,19 @@
 import React from 'react';
-import { Car, MapPin, Shield, Clock, Users, Star, Zap, Award } from 'lucide-react';
+import { Car, MapPin, Shield, CircleDollarSign, Users, Star, Zap, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const FeaturesSection: React.FC = () => {
   const services = [
-    {
-      icon: MapPin,
-      title: 'City Rides',
-      description: 'Quick and comfortable rides within the city with professional drivers',
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-      iconColor: 'text-blue-600',
-      features: ['GPS Tracking', 'Real-time Updates', 'Multiple Payment Options']
-    },
+  {
+  icon: MapPin,
+  title: 'City Rides',
+  description: 'Quick and comfortable rides within the city with professional drivers',
+  color: 'from-blue-500 to-blue-600',
+  bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+  iconColor: 'text-blue-600',
+  features: ['Affordable Fares', 'Professional Drivers', 'Fast Pickups']
+}
+,
     {
       icon: Car,
       title: 'Outstation Trips',
@@ -22,23 +23,24 @@ const FeaturesSection: React.FC = () => {
       iconColor: 'text-green-600',
       features: ['Premium Fleet', 'Flexible Timing', 'Transparent Pricing']
     },
-    {
-      icon: Zap,
-      title: 'Airport Transfers',
-      description: 'Reliable airport pickup and drop services with flight tracking',
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-      iconColor: 'text-purple-600',
-      features: ['Flight Tracking', '24/7 Available', 'Meet & Greet']
-    },
-    {
-      icon: Clock,
-      title: 'Rentals',
-      description: 'Hourly and daily car rentals for your convenience and comfort',
+   {
+  icon: Zap,
+  title: 'Airport Transfers',
+  description: 'Reliable airport pickup and drop services with professional drivers',
+  color: 'from-purple-500 to-purple-600',
+  bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+  iconColor: 'text-purple-600',
+  features: ['Punctual Pickups', 'Safe & Comfortable Rides', 'Premium Fleet']
+}
+
+,    {
+      icon: CircleDollarSign,
+      title: 'Affordable Rides',
+      description: 'Budget-friendly rides without compromising on safety & comfort',
       color: 'from-orange-500 to-orange-600',
       bgColor: 'bg-orange-50 dark:bg-orange-900/20',
       iconColor: 'text-orange-600',
-      features: ['Flexible Duration', 'Self Drive Option', 'Competitive Rates']
+      features: ['Pocket-Friendly', 'Safe & Reliable', 'Comfortable Travel']
     }
   ];
 
@@ -56,11 +58,19 @@ const FeaturesSection: React.FC = () => {
       stat: '500+'
     },
     {
-      icon: Star,
-      title: 'Top Rated',
-      description: '4.8+ star rating from thousands of satisfied customers',
-      stat: '4.8★'
-    },
+  icon: Zap, // lightning bolt icon for speed
+  title: 'Fast Pickups',
+  description: 'Quick and reliable rides, ensuring a smooth journey every time',
+  stat: 'Quick',
+  color: 'from-yellow-500 to-yellow-600',
+  bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
+  iconColor: 'text-yellow-600'
+}
+
+    
+    
+    
+    ,
     {
       icon: Award,
       title: 'Premium Fleet',
