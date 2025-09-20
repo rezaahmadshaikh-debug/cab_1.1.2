@@ -134,16 +134,8 @@ const AdminLogin: React.FC = () => {
           </motion.button>
         </form>
 
-        {/* Demo Credentials */}
-        <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <p className="text-xs text-gray-600 dark:text-gray-400 text-center mb-2">
-            Demo Admin Credentials:
-          </p>
-          <div className="text-xs text-gray-700 dark:text-gray-300 text-center space-y-1">
-            <div>Username: <span className="font-mono bg-gray-200 dark:bg-gray-600 px-1 rounded">admin</span></div>
-            <div>Password: <span className="font-mono bg-gray-200 dark:bg-gray-600 px-1 rounded">admin123</span></div>
-          </div>
-        </div>
+       
+      
       </motion.div>
     </div>
   );
