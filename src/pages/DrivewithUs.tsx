@@ -39,7 +39,7 @@ const DriveWithUs: React.FC = () => {
 Please provide me with the next steps.`;
 
         const encodedMessage = encodeURIComponent(message);
-        const clientWhatsAppNumber = '919860146819'; // Your client's WhatsApp number
+        const clientWhatsAppNumber = '918265036513'; // Your client's WhatsApp number
         const whatsappURL = `https://wa.me/${clientWhatsAppNumber}?text=${encodedMessage}`;
 
         window.open(whatsappURL, '_blank');

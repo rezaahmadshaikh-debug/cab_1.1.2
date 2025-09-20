@@ -19,6 +19,7 @@ const Header: React.FC = () => {
     { name: 'Home', path: '/' },
     { name: 'Services', path: '/services' },
     { name: 'Contact', path: '/contact' },
+      { name: 'Drive With Us', path: '/drive-with-us' },
   ];
 
   useEffect(() => {
