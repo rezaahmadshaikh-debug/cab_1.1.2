@@ -19,43 +19,32 @@ const AdminResetPassword: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  const accessToken = searchParams.get('access_token');
+
   useEffect(() => {
-    // Check if we have the required tokens from the URL
-    const accessToken = searchParams.get('access_token');
-    const refreshToken = searchParams.get('refresh_token');
-    
-    if (!accessToken || !refreshToken) {
+    // Only check for access_token
+    if (!accessToken) {
       toast.error('Invalid reset link. Please request a new password reset.');
       navigate('/admin/forgot-password');
     }
-  }, [searchParams, navigate]);
+  }, [accessToken, navigate]);
 
   const validatePassword = (password: string) => {
-    if (password.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
-    if (!/(?=.*[a-z])/.test(password)) {
-      return 'Password must contain at least one lowercase letter';
-    }
-    if (!/(?=.*[A-Z])/.test(password)) {
-      return 'Password must contain at least one uppercase letter';
-    }
-    if (!/(?=.*\d)/.test(password)) {
-      return 'Password must contain at least one number';
-    }
+    if (password.length < 8) return 'Password must be at least 8 characters long';
+    if (!/(?=.*[a-z])/.test(password)) return 'Password must contain at least one lowercase letter';
+    if (!/(?=.*[A-Z])/.test(password)) return 'Password must contain at least one uppercase letter';
+    if (!/(?=.*\d)/.test(password)) return 'Password must contain at least one number';
     return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate passwords match
+
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
 
-    // Validate password strength
     const passwordError = validatePassword(formData.password);
     if (passwordError) {
       toast.error(passwordError);
@@ -65,16 +54,14 @@ const AdminResetPassword: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const result = await updateUserPassword(formData.password);
-      
+      if (!accessToken) throw new Error('Access token missing');
+
+      const result = await updateUserPassword(formData.password, accessToken);
+
       if (result.success) {
         setIsSuccess(true);
         toast.success('Password updated successfully!');
-        
-        // Redirect to login after 3 seconds
-        setTimeout(() => {
-          navigate('/admin');
-        }, 3000);
+        setTimeout(() => navigate('/admin'), 3000);
       } else {
         toast.error(result.error || 'Failed to update password');
       }
@@ -101,15 +88,12 @@ const AdminResetPassword: React.FC = () => {
           >
             <CheckCircle className="w-10 h-10 text-green-600" />
           </motion.div>
-          
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
             Password Updated!
           </h1>
-          
           <p className="text-gray-600 dark:text-gray-300 mb-8">
             Your password has been successfully updated. You will be redirected to the login page shortly.
           </p>
-          
           <button
             onClick={() => navigate('/admin')}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors"
@@ -128,7 +112,6 @@ const AdminResetPassword: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8"
       >
-        {/* Header */}
         <div className="text-center mb-8">
           <motion.div
             initial={{ scale: 0 }}
@@ -138,15 +121,10 @@ const AdminResetPassword: React.FC = () => {
           >
             <Lock className="w-10 h-10 text-blue-600" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-            Reset Password
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            Enter your new password below
-          </p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">Reset Password</h1>
+          <p className="text-gray-600 dark:text-gray-300">Enter your new password below</p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* New Password */}
           <div>
@@ -196,31 +174,6 @@ const AdminResetPassword: React.FC = () => {
                 {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
-          </div>
-
-          {/* Password Requirements */}
-          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Password Requirements:
-            </h4>
-            <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-              <li className={`flex items-center ${formData.password.length >= 8 ? 'text-green-600' : ''}`}>
-                <span className="mr-2">{formData.password.length >= 8 ? '✓' : '•'}</span>
-                At least 8 characters long
-              </li>
-              <li className={`flex items-center ${/(?=.*[a-z])/.test(formData.password) ? 'text-green-600' : ''}`}>
-                <span className="mr-2">{/(?=.*[a-z])/.test(formData.password) ? '✓' : '•'}</span>
-                One lowercase letter
-              </li>
-              <li className={`flex items-center ${/(?=.*[A-Z])/.test(formData.password) ? 'text-green-600' : ''}`}>
-                <span className="mr-2">{/(?=.*[A-Z])/.test(formData.password) ? '✓' : '•'}</span>
-                One uppercase letter
-              </li>
-              <li className={`flex items-center ${/(?=.*\d)/.test(formData.password) ? 'text-green-600' : ''}`}>
-                <span className="mr-2">{/(?=.*\d)/.test(formData.password) ? '✓' : '•'}</span>
-                One number
-              </li>
-            </ul>
           </div>
 
           <motion.button
