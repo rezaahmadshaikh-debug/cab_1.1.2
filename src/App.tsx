@@ -4,12 +4,16 @@ import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AdminProvider } from './contexts/AdminContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { SupabaseAuthProvider } from './contexts/SupabaseAuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Services from './pages/Services';
 import Contact from './pages/Contact';
 import AdminLogin from './pages/AdminLogin';
+import AdminForgotPassword from './pages/AdminForgotPassword';
+import AdminResetPassword from './pages/AdminResetPassword';
 import AdminDashboard from './pages/AdminDashboard';
 import DriveWithUs from './pages/DrivewithUs'; 
 
@@ -29,7 +33,16 @@ function AppLayout() {
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/forgot-password" element={<AdminForgotPassword />} />
+        <Route path="/admin/reset-password" element={<AdminResetPassword />} />
+        <Route 
+          path="/admin/dashboard" 
+          element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
         <Route path="/drive-with-us" element={<DriveWithUs />} />
       </Routes>
       
@@ -44,13 +57,15 @@ function AppLayout() {
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <AdminProvider>
-          <Router>
-            <AppLayout />
-          </Router>
-        </AdminProvider>
-      </AuthProvider>
+      <SupabaseAuthProvider>
+        <AuthProvider>
+          <AdminProvider>
+            <Router>
+              <AppLayout />
+            </Router>
+          </AdminProvider>
+        </AuthProvider>
+      </SupabaseAuthProvider>
     </ThemeProvider>
   );
 }

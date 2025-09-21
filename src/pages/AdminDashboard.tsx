@@ -21,7 +21,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
@@ -47,7 +47,7 @@ interface Booking {
 const AdminDashboard: React.FC = () => {
   const { admin, pricing, logout, updatePricing, addCity, removeCity, addRoute, updateRoute, deleteRoute } = useAdmin();
   const { fetchCitiesAndRoutes, fetchMumbaiPricing, updateMumbaiPricing } = useAdmin();
-  const { user, logout: authLogout } = useAuth();
+  const { user: supabaseUser, signOut } = useSupabaseAuth();
   const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState<'overview' | 'bookings' | 'pricing'>('overview');
@@ -63,7 +63,7 @@ const AdminDashboard: React.FC = () => {
   // newPost, editingPost states removed
 
   useEffect(() => {
-    if (!admin?.isAuthenticated && !user) {
+    if (!supabaseUser) {
       navigate('/admin');
       return;
     }
@@ -71,7 +71,7 @@ const AdminDashboard: React.FC = () => {
     // fetchPromotionalPosts() removed
     fetchCitiesAndRoutes();
     fetchMumbaiPricing();
-  }, [admin, user, navigate]);
+  }, [supabaseUser, navigate]);
 
   useEffect(() => {
     setTempPricing(pricing);
@@ -117,12 +117,9 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleLogout = () => {
-    if (admin?.isAuthenticated) {
-      logout();
-    } else {
-      authLogout();
-    }
-    navigate('/');
+    signOut().then(() => {
+      navigate('/admin');
+    });
   };
 
   const savePricing = async () => {
@@ -240,7 +237,7 @@ const AdminDashboard: React.FC = () => {
               <div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Welcome, {admin?.username || user?.name || 'Administrator'}
+                  Welcome, {supabaseUser?.email || 'Administrator'}
                 </p>
               </div>
             </div>

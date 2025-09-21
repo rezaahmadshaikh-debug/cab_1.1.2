@@ -1,25 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Shield, User, Lock, LogIn } from "lucide-react";
-import { useAdmin } from "../contexts/AdminContext";
-import { useAuth } from "../contexts/AuthContext";
+import { useSupabaseAuth } from "../contexts/SupabaseAuthContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const AdminLogin: React.FC = () => {
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login: adminLogin, admin } = useAdmin();
-  const { login: authLogin, user } = useAuth();
+  const { signIn, user, isAdmin } = useSupabaseAuth();
   const navigate = useNavigate();
 
   // If already authenticated, redirect
   useEffect(() => {
-    if (admin?.isAuthenticated || (user && user.role === "admin")) {
+    if (user && isAdmin()) {
       navigate("/admin/dashboard");
     }
-  }, [admin, user, navigate]);
+  }, [user, isAdmin, navigate]);
 
   // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,23 +26,14 @@ const AdminLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Try admin login first
-      const adminResult = await adminLogin(formData.username, formData.password);
-      if (adminResult.success) {
-        toast.success("Admin login successful!");
+      const result = await signIn(formData.email, formData.password);
+      
+      if (result.success) {
+        toast.success("Login successful!");
         navigate("/admin/dashboard");
-        return;
+      } else {
+        toast.error(result.error || "Login failed");
       }
-
-      // Try auth login (check role directly from result, not stale state)
-      const authResult = await authLogin(formData.username, formData.password);
-      if (authResult.success && authResult.user?.role === "admin") {
-        toast.success("Admin login successful!");
-        navigate("/admin/dashboard");
-        return;
-      }
-
-      toast.error("Invalid admin credentials");
     } catch (error: any) {
       toast.error(error.message || "Something went wrong. Please try again.");
     } finally {
@@ -81,19 +71,19 @@ const AdminLogin: React.FC = () => {
           {/* Username */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Username / Phone
+              Email Address
             </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
-                type="text"
-                value={formData.username}
+                type="email"
+                value={formData.email}
                 onChange={(e) =>
-                  setFormData({ ...formData, username: e.target.value })
+                  setFormData({ ...formData, email: e.target.value })
                 }
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                placeholder="Enter username or phone number"
-                autoComplete="username"
+                placeholder="Enter your email address"
+                autoComplete="email"
                 required
               />
             </div>
@@ -139,8 +129,15 @@ const AdminLogin: React.FC = () => {
           </motion.button>
         </form>
 
-       
-      
+        {/* Forgot Password Link */}
+        <div className="mt-6 text-center">
+          <Link
+            to="/admin/forgot-password"
+            className="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            Forgot your password?
+          </Link>
+        </div>
       </motion.div>
     </div>
   );
