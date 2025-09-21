@@ -247,7 +247,7 @@ const OutstationBooking: React.FC = () => {
                   required
                 >
                   <option value="">Select departure city</option>
-                  {cities.map(city => (
+                  {displayCities.map(city => (
                     <option key={city} value={city}>{city}</option>
                   ))}
                 </select>
@@ -268,7 +268,7 @@ const OutstationBooking: React.FC = () => {
                   required
                 >
                   <option value="">Select destination city</option>
-                  {cities.filter(city => city !== booking.from).map(city => (
+                  {displayCities.filter(city => city !== booking.from).map(city => (
                     <option key={city} value={city}>{city}</option>
                   ))}
                 </select>
