@@ -76,12 +76,14 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const savedAdmin = localStorage.getItem('Saffari_admin');
     if (savedAdmin) setAdmin(JSON.parse(savedAdmin));
 
+    // Always fetch cities and routes, regardless of admin status
     fetchCitiesAndRoutes();
     fetchMumbaiPricing();
   }, []);
 
   const fetchCitiesAndRoutes = async () => {
     try {
+      // Use anon access for public data
       const { data: cities, error: citiesError } = await supabase
         .from('cities')
         .select('*')
@@ -99,36 +101,62 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         cities: cities || [],
         routes: routes || []
       }));
+      
+      console.log('Fetched cities:', cities);
+      console.log('Fetched routes:', routes);
     } catch (error) {
       console.error('Error fetching cities and routes:', error);
-      toast.error('Failed to load cities and routes');
+      // Don't show error toast for public data fetching
+      console.warn('Failed to load cities and routes, using defaults');
     }
   };
 
   const fetchMumbaiPricing = async () => {
     try {
-      const { data, error } = await supabase
+      // Try to fetch from local_fares first, then fall back to mumbai_pricing
+      let data = null;
+      let error = null;
+
+      // Try local_fares table first
+      const localFaresResult = await supabase
         .from('local_fares')
         .select('*')
         .eq('service_area', 'Mumbai Local')
         .single();
 
-      if (error) throw error;
+      if (localFaresResult.error) {
+        // Fall back to mumbai_pricing table
+        const mumbaiPricingResult = await supabase
+          .from('mumbai_pricing')
+          .select('*')
+          .eq('id', 'default')
+          .single();
+        
+        data = mumbaiPricingResult.data;
+        error = mumbaiPricingResult.error;
+      } else {
+        data = localFaresResult.data;
+      }
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
 
       if (data) {
         setPricing(prev => ({
           ...prev,
           mumbaiLocal: {
-            fourSeaterRate: data.normal_4_seater_rate_per_km,
-            sixSeaterRate: data.normal_6_seater_rate_per_km,
-            airportFourSeaterRate: data.airport_4_seater_rate_per_km,
-            airportSixSeaterRate: data.airport_6_seater_rate_per_km
+            fourSeaterRate: data.normal_4_seater_rate_per_km || data.four_seater_rate || 15,
+            sixSeaterRate: data.normal_6_seater_rate_per_km || data.six_seater_rate || 18,
+            airportFourSeaterRate: data.airport_4_seater_rate_per_km || data.airport_four_seater_rate || 18,
+            airportSixSeaterRate: data.airport_6_seater_rate_per_km || data.airport_six_seater_rate || 22
           }
         }));
       }
     } catch (error) {
       console.error('Error fetching Mumbai pricing:', error);
-      toast.error('Failed to load Mumbai pricing');
+      // Use default pricing if fetch fails
+      console.warn('Using default Mumbai pricing');
     }
   };
 

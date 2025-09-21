@@ -41,7 +41,18 @@ const OutstationBooking: React.FC = () => {
   });
   const { pricing } = useAdmin();
 
+  // Debug cities loading
+  React.useEffect(() => {
+    console.log('Pricing object:', pricing);
+    console.log('Cities array:', pricing.cities);
+    console.log('Routes array:', pricing.routes);
+  }, [pricing]);
+
   const cities = pricing.cities.map(c => c.name);
+  
+  // Fallback cities if none are loaded
+  const fallbackCities = ['Mumbai', 'Pune', 'Surat', 'Nashik', 'Delhi', 'Bangalore'];
+  const displayCities = cities.length > 0 ? cities : fallbackCities;
   
   const getPrice = () => {
     if (!booking.from || !booking.to || booking.from === booking.to) return 0;

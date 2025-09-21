@@ -167,6 +167,38 @@ export type Database = {
           updated_at?: string;
         };
       };
+      local_fares: {
+        Row: {
+          id: string;
+          service_area: string;
+          normal_4_seater_rate_per_km: number;
+          normal_6_seater_rate_per_km: number;
+          airport_4_seater_rate_per_km: number;
+          airport_6_seater_rate_per_km: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          service_area: string;
+          normal_4_seater_rate_per_km: number;
+          normal_6_seater_rate_per_km: number;
+          airport_4_seater_rate_per_km: number;
+          airport_6_seater_rate_per_km: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          service_area?: string;
+          normal_4_seater_rate_per_km?: number;
+          normal_6_seater_rate_per_km?: number;
+          airport_4_seater_rate_per_km?: number;
+          airport_6_seater_rate_per_km?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 };

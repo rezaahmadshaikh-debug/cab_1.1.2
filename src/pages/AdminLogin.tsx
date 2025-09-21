@@ -5,6 +5,7 @@ import { useSupabaseAuth } from "../contexts/SupabaseAuthContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 
 const AdminLogin: React.FC = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -20,11 +21,71 @@ const AdminLogin: React.FC = () => {
     }
   }, [user, isAdmin, navigate]);
 
+  // Create admin user if it doesn't exist (for development)
+  const createAdminUserIfNeeded = async (authUser: any) => {
+    try {
+      const { data: existingAdmin, error: checkError } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('id', authUser.id)
+        .single();
+
+      if (checkError && checkError.code === 'PGRST116') {
+        // Admin user doesn't exist, create one
+        const { error: insertError } = await supabase
+          .from('admin_users')
+          .insert({
+            id: authUser.id,
+            email: authUser.email,
+            role: 'admin'
+          });
+
+        if (insertError) {
+          console.error('Error creating admin user:', insertError);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking/creating admin user:', error);
+    }
+  };
   // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
+    try {
+      // First, try to sign in with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (authError) {
+        toast.error(authError.message || "Login failed");
+        setIsLoading(false);
+        return;
+      }
+
+      if (authData.user) {
+        // Create admin user record if it doesn't exist
+        await createAdminUserIfNeeded(authData.user);
+        
+        // Small delay to ensure admin user is created
+        setTimeout(() => {
+          toast.success("Login successful!");
+          navigate("/admin/dashboard");
+        }, 500);
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast.error(error.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fallback method using the existing auth context
+  const handleFallbackSubmit = async () => {
     try {
       const result = await signIn(formData.email, formData.password);
       
@@ -36,8 +97,6 @@ const AdminLogin: React.FC = () => {
       }
     } catch (error: any) {
       toast.error(error.message || "Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
