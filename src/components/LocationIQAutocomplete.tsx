@@ -89,30 +89,89 @@ const GoogleMapsAutocomplete: React.FC<LocationAutocompleteProps> = ({
         const { latitude, longitude } = position.coords;
 
         try {
-          // Use Google Geocoding API for reverse geocoding
-          const response = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`
-          );
-
-          if (!response.ok) throw new Error(`Reverse geocode failed: ${response.status}`);
-
-          const data = await response.json();
-          if (data.results && data.results.length > 0) {
-            onChange(data.results[0].formatted_address, { lat: latitude, lng: longitude });
-          } else {
-            onChange(`${latitude}, ${longitude}`, { lat: latitude, lng: longitude });
+          // Try OpenStreetMap Nominatim first (free, no API key required)
+          let address = '';
+          let reverseGeocodingSuccess = false;
+          
+          try {
+            const nominatimResponse = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`
+            );
+            
+            if (nominatimResponse.ok) {
+              const nominatimData = await nominatimResponse.json();
+              if (nominatimData && nominatimData.display_name) {
+                address = nominatimData.display_name;
+                reverseGeocodingSuccess = true;
+              }
+            }
+          } catch (nominatimError) {
+            console.warn('Nominatim reverse geocoding failed:', nominatimError);
           }
+          
+          // Fallback to Google Geocoding API if Nominatim fails
+          if (!reverseGeocodingSuccess && import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
+            try {
+              const googleResponse = await fetch(
+                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`
+              );
+              
+              if (googleResponse.ok) {
+                const googleData = await googleResponse.json();
+                if (googleData.results && googleData.results.length > 0) {
+                  address = googleData.results[0].formatted_address;
+                  reverseGeocodingSuccess = true;
+                }
+              }
+            } catch (googleError) {
+              console.warn('Google reverse geocoding failed:', googleError);
+            }
+          }
+          
+          // If both reverse geocoding attempts fail, use coordinates as fallback
+          if (!reverseGeocodingSuccess) {
+            address = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+            console.warn('Reverse geocoding failed, using coordinates as fallback');
+          }
+
+          // Always pass the coordinates along with the address for route calculation
+          onChange(address, { lat: latitude, lng: longitude });
+          
         } catch (error) {
-          console.error('Error getting current location:', error);
-          onChange(`${latitude}, ${longitude}`, { lat: latitude, lng: longitude });
+          console.error('Error during reverse geocoding:', error);
+          // Fallback to coordinates if all geocoding fails
+          const fallbackAddress = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+          onChange(fallbackAddress, { lat: latitude, lng: longitude });
         } finally {
           setIsLoading(false);
         }
       },
       (error) => {
         console.error('Error getting location:', error);
-        alert('Unable to get your current location');
+        let errorMessage = 'Unable to get your current location';
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Location access denied. Please enable location permissions and try again.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Location information is unavailable. Please try again.';
+            break;
+          case error.TIMEOUT:
+            errorMessage = 'Location request timed out. Please try again.';
+            break;
+          default:
+            errorMessage = 'An unknown error occurred while getting your location.';
+            break;
+        }
+        
+        alert(errorMessage);
         setIsLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000 // 5 minutes
       }
     );
   };
